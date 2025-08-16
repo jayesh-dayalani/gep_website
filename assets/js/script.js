@@ -78,69 +78,127 @@ window.addEventListener("scroll", function () {
   }
 });
 
+// perplex
+document.addEventListener("DOMContentLoaded", function () {
+  const heroSliders = document.querySelectorAll("[data-hero-slider]");
 
+  heroSliders.forEach(slider => {
+    const sliderName = slider.getAttribute("data-hero-slider");
+    const sliderItems = slider.querySelectorAll("[data-hero-slider-item]");
+    let currentSlidePos = 0;
+    let lastActiveSliderItem = sliderItems[0];
+
+    // Select only controls for this slider
+    const prevBtn = document.querySelector(`[data-prev-btn="${sliderName}"]`);
+    const nextBtn = document.querySelector(`[data-next-btn="${sliderName}"]`);
+
+    function updateSliderPos() {
+      lastActiveSliderItem.classList.remove("active");
+      sliderItems[currentSlidePos].classList.add("active");
+      lastActiveSliderItem = sliderItems[currentSlidePos];
+    }
+
+    function slideNext() {
+      if (currentSlidePos >= sliderItems.length - 1) {
+        currentSlidePos = 0;
+      } else {
+        currentSlidePos++;
+      }
+      updateSliderPos();
+    }
+
+    function slidePrev() {
+      if (currentSlidePos <= 0) {
+        currentSlidePos = sliderItems.length - 1;
+      } else {
+        currentSlidePos--;
+      }
+      updateSliderPos();
+    }
+
+    nextBtn?.addEventListener("click", slideNext);
+    prevBtn?.addEventListener("click", slidePrev);
+
+    // Optional: Auto Slide for each
+    let autoSlideInterval;
+    function autoSlide() {
+      autoSlideInterval = setInterval(slideNext, 7000);
+    }
+
+    [nextBtn, prevBtn].forEach(btn => {
+      btn?.addEventListener("mouseover", () => clearInterval(autoSlideInterval));
+      btn?.addEventListener("mouseout", autoSlide);
+    });
+
+    window.addEventListener("load", autoSlide);
+
+    // Init
+    updateSliderPos();
+  });
+});
+// perplex
 
 /**
  * HERO SLIDER
  */
 
-const heroSlider = document.querySelector("[data-hero-slider]");
-const heroSliderItems = document.querySelectorAll("[data-hero-slider-item]");
-const heroSliderPrevBtn = document.querySelector("[data-prev-btn]");
-const heroSliderNextBtn = document.querySelector("[data-next-btn]");
+// const heroSlider = document.querySelector("[data-hero-slider]");
+// const heroSliderItems = document.querySelectorAll("[data-hero-slider-item]");
+// const heroSliderPrevBtn = document.querySelector("[data-prev-btn]");
+// const heroSliderNextBtn = document.querySelector("[data-next-btn]");
 
-let currentSlidePos = 0;
-let lastActiveSliderItem = heroSliderItems[0];
+// let currentSlidePos = 0;
+// let lastActiveSliderItem = heroSliderItems[0];
 
-const updateSliderPos = function () {
-  lastActiveSliderItem.classList.remove("active");
-  heroSliderItems[currentSlidePos].classList.add("active");
-  lastActiveSliderItem = heroSliderItems[currentSlidePos];
-}
+// const updateSliderPos = function () {
+//   lastActiveSliderItem.classList.remove("active");
+//   heroSliderItems[currentSlidePos].classList.add("active");
+//   lastActiveSliderItem = heroSliderItems[currentSlidePos];
+// }
 
-const slideNext = function () {
-  if (currentSlidePos >= heroSliderItems.length - 1) {
-    currentSlidePos = 0;
-  } else {
-    currentSlidePos++;
-  }
+// const slideNext = function () {
+//   if (currentSlidePos >= heroSliderItems.length - 1) {
+//     currentSlidePos = 0;
+//   } else {
+//     currentSlidePos++;
+//   }
 
-  updateSliderPos();
-}
+//   updateSliderPos();
+// }
 
-heroSliderNextBtn.addEventListener("click", slideNext);
+// heroSliderNextBtn.addEventListener("click", slideNext);
 
-const slidePrev = function () {
-  if (currentSlidePos <= 0) {
-    currentSlidePos = heroSliderItems.length - 1;
-  } else {
-    currentSlidePos--;
-  }
+// const slidePrev = function () {
+//   if (currentSlidePos <= 0) {
+//     currentSlidePos = heroSliderItems.length - 1;
+//   } else {
+//     currentSlidePos--;
+//   }
 
-  updateSliderPos();
-}
+//   updateSliderPos();
+// }
 
-heroSliderPrevBtn.addEventListener("click", slidePrev);
+// heroSliderPrevBtn.addEventListener("click", slidePrev);
 
 /**
  * auto slide
  */
 
-let autoSlideInterval;
+// let autoSlideInterval;
 
-const autoSlide = function () {
-  autoSlideInterval = setInterval(function () {
-    slideNext();
-  }, 7000);
-}
+// const autoSlide = function () {
+//   autoSlideInterval = setInterval(function () {
+//     slideNext();
+//   }, 7000);
+// }
 
-addEventOnElements([heroSliderNextBtn, heroSliderPrevBtn], "mouseover", function () {
-  clearInterval(autoSlideInterval);
-});
+// addEventOnElements([heroSliderNextBtn, heroSliderPrevBtn], "mouseover", function () {
+//   clearInterval(autoSlideInterval);
+// });
 
-addEventOnElements([heroSliderNextBtn, heroSliderPrevBtn], "mouseout", autoSlide);
+// addEventOnElements([heroSliderNextBtn, heroSliderPrevBtn], "mouseout", autoSlide);
 
-window.addEventListener("load", autoSlide);
+// window.addEventListener("load", autoSlide);
 
 
 
@@ -167,4 +225,31 @@ window.addEventListener("mousemove", function (event) {
     parallaxItems[i].style.transform = `translate3d(${x}px, ${y}px, 0px)`;
   }
 
+});
+
+
+// Replace with your actual project values:
+const SUPABASE_URL = 'https://pzulusjpvcfdunjrpslx.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB6dWx1c2pwdmNmZHVuanJwc2x4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUzMjQ2MTIsImV4cCI6MjA3MDkwMDYxMn0.QRwo3KGku7lxgy6iePNc7SZpO9ZvaTs2XWSMYoeOQdg';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+document.querySelector('.form-left').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const name = this.querySelector('[name="name"]').value;
+  const contact = this.querySelector('[name="contact"]').value;
+  const message = this.querySelector('[name="message"]').value;
+
+  const { data, error } = await supabase
+    .from('cta')
+    .insert([
+      { name, contact, message }
+    ]);
+
+  if (error) {
+    alert('Lead not submitted: ' + error.message);
+    return;
+  }
+
+  alert('Thank you, we have received your request!');
+  this.reset();
 });
